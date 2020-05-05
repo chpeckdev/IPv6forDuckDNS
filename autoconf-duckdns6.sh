@@ -11,8 +11,8 @@ duck6conf="$HOME"/.duck6.conf
 
 # Probe IPv4 and IPv6 addresses
 read -r _ _ _ _ iface _ ipv4local <<<"$(ip r g 8.8.8.8 | head -1)"
-ipv6addr=$(ip addr show dev "$iface" | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -v '^fd00' | grep -v '^fe80' | head -1)
-
+iface_teredo=teredo
+ipv6addr=$(ip addr show dev "$iface_teredo" | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -v '^fd00' | grep -v '^fe80' | head -1)
 # Does .duck6.conf exist?
 if [[ -f "$duck6conf" ]] ; then
   source "$duck6conf"
@@ -43,8 +43,10 @@ fi
 
 # Connect to DuckDNS
 printf "\nNow connecting to DuckDNS... "
+#printf "\n\nsend ipv4:>$ipv4addr<\nsend ipv6:>$ipv6addr<\n"
+#printf "\nsend req:>https://www.duckdns.org/update?domains=$duckdomain&token=$ducktoken&ip=$ipv4addr&ipv6=$ipv6addr<\n"
 curl -s "https://www.duckdns.org/update?domains=$duckdomain&token=$ducktoken&ip=$ipv4addr&ipv6=$ipv6addr"
-
+printf "\n"
 # Write changes and create cronjob
 
 if [[ -f "$duck6conf" ]] ; then
